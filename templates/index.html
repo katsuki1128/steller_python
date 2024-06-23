@@ -27,6 +27,16 @@
     {% if image_url %}
     <h2>生成されたトゥルーカラー画像</h2>
     <img src="{{ image_url }}" alt="True Color Image">
+    <h2>地図に画像を重ねる</h2>
+    <div id="overlay-map" style="height: 500px; width: 100%;"></div>
+    <script>
+        const overlayMap = L.map('overlay-map').setView([{{ south }} + ({{ north }} - {{ south }}) / 2, {{ west }} + ({{ east }} - {{ west }}) / 2], 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+        }).addTo(overlayMap);
+
+        L.imageOverlay('{{ image_url }}', [[{{ south }}, {{ west }}], [{{ north }}, {{ east }}]]).addTo(overlayMap);
+    </script>
     {% endif %}
 
     <script>
