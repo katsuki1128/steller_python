@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>OpenEO Spatial Extent Selector</title>
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+
+<body>
+    <h1>OpenEO空間</h1>
+    <div id="map"></div>
+    <form method="post" action="/process">
+        <input type="hidden" id="west" name="west">
+        <input type="hidden" id="south" name="south">
+        <input type="hidden" id="east" name="east">
+        <input type="hidden" id="north" name="north">
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if image_url %}
+    <h2>生成されたトゥルーカラー画像</h2>
+    <img src="{{ image_url }}" alt="True Color Image">
+    {% endif %}
+
+    <script>
+        const map = L.map('map').setView([33.583277, 130.375651], 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+        }).addTo(map);
+
+        let bounds;
+        map.on('click', (e) => {
+            if (bounds) {
+                map.removeLayer(bounds);
+            }
+            bounds = L.rectangle([[e.latlng.lat - 0.05, e.latlng.lng - 0.05], [e.latlng.lat + 0.05, e.latlng.lng + 0.05]], { color: "#ff7800", weight: 1 });
+            bounds.addTo(map);
+
+            const west = e.latlng.lng - 0.05;
+            const south = e.latlng.lat - 0.05;
+            const east = e.latlng.lng + 0.05;
+            const north = e.latlng.lat + 0.05;
+            document.getElementById('west').value = west;
+            document.getElementById('south').value = south;
+            document.getElementById('east').value = east;
+            document.getElementById('north').value = north;
+
+            console.log(`West: ${west}, South: ${south}, East: ${east}, North: ${north}`);
+
+        });
+    </script>
+</body>
+
+</html>
